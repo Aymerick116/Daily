@@ -1,0 +1,25 @@
+name: Daily Commit (Test Every 5 Min)
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes (UTC, GitHub limit)
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set Git Identity
+        run: |
+          git config user.name "Aymerick Bot"
+          git config user.email "aymericknoah97@gmail.com"
+
+      - name: Update File and Push
+        run: |
+          echo "Committed on $(date)" >> daily_commit_log.txt
+          git add daily_commit_log.txt
+          git commit -m "GitHub Action commit: $(date)" || echo "No changes to commit"
+          git push
