@@ -2,8 +2,8 @@ name: Daily Commit (Test Every 5 Min)
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes (UTC, GitHub limit)
-  workflow_dispatch:        # Manual trigger
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   commit:
@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       - name: Set Git Identity
         run: |
