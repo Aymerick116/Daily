@@ -1,18 +1,21 @@
-name: Daily Commit (Test Every 5 Min)
+name: Daily Commit
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 */6 * * *'   # every 6 hours
   workflow_dispatch:
+
+permissions:
+  contents: write   # IMPORTANT: allow pushes
 
 jobs:
   commit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          persist-credentials: false
 
       - name: Set Git Identity
         run: |
@@ -20,8 +23,10 @@ jobs:
           git config user.email "aymericknoah97@gmail.com"
 
       - name: Update File and Push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Committed on $(date)" >> daily_commit_log.txt
           git add daily_commit_log.txt
           git commit -m "GitHub Action commit: $(date)" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
